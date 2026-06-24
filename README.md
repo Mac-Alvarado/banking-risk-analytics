@@ -1,4 +1,4 @@
-![banking-risk-analytics](./picture/baneer_banca.png)
+![Banner](./images/banner_banca.png)
 
 # 🏦 Análisis de Riesgo Crediticio - Banco Checoslovaco
 
