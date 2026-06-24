@@ -1,6 +1,7 @@
+![banking-risk-analytics](./picture/baneer_banca.png)
+
 # 🏦 Análisis de Riesgo Crediticio - Banco Checoslovaco
 
-![Banner](images/banner_banca.png)
 
 ## 📌 Resumen Ejecutivo
 
@@ -20,7 +21,7 @@
 ## 📩 Conéctate conmigo
 
 <p align="center">
-  <a href="https://www.linkedin.com/in/mac-alvarado/">
+  <a href="https://www.linkedin.com/in/mac-alvarado-data/">
     <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=flat-square&logo=linkedin&logoColor=white" />
   </a>
   <a href="https://github.com/Mac-Alvarado">
