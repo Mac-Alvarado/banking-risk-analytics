@@ -1,4 +1,4 @@
-![Banner](./images/banner_banca.png)
+![Baneer](./images/baneer_banca.png)
 
 # 🏦 Análisis de Riesgo Crediticio - Banco Checoslovaco
 
@@ -9,10 +9,10 @@
 
 **Mi rol:** Como Data Analyst, he analizado más de **1.5 millones de registros** (transacciones, préstamos, clientes y cuentas) utilizando **SQL Server** para generar **15 KPIs estratégicos** que permitan:
 
-- 🔍 Identificar distritos con mayor riesgo crediticio
-- 📊 Detectar clientes con alta probabilidad de default
-- 💰 Calcular la rentabilidad por región
-- 🎯 Proponer acciones concretas para reducir la morosidad
+- Identificar distritos con mayor riesgo crediticio
+- Detectar clientes con alta probabilidad de default
+- Calcular la rentabilidad por región
+- Proponer acciones concretas para reducir la morosidad
 
 **Resultado:** El análisis reveló que **el 65.69% de los préstamos están en estados problemáticos**, con distritos como **Domažlice (50% de morosidad)** y **Bruntal (33.33%)** que requieren atención inmediata.
 
