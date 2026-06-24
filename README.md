@@ -160,6 +160,8 @@ FROM client;
 ```
 ![picture](./images/total_clientes.png)
 
+Insight:
+
 El banco tiene 5,369 clientes en total. Esta cifra es la base para calcular la penetración de productos y el potencial de crecimiento. Si el banco quiere expandirse, debe enfocar sus campañas en adquirir nuevos clientes en distritos donde aún no tiene presencia.
 
 -  KPI: Total de Clientes = 5,369
@@ -186,6 +188,8 @@ ORDER BY total_cuentas DESC;
 ```
 ![picture](./images/dis_frecuencia.png)
 
+Insight:
+
 El 92.6% de las cuentas (4,167) operan con frecuencia mensual, lo cual es el estándar bancario. Solo el 5.3% (240) son semanales y el 2.1% (93) operan por transacción. Esto indica un perfil de clientes minoristas tradicionales. Si el banco quiere lanzar nuevos productos, debería enfocarse en las cuentas mensuales, ya que representan la mayor parte de la cartera.
 
 - KPI: Cuentas Mensuales = 92.6%
@@ -206,6 +210,8 @@ GROUP BY d.district_name
 ORDER BY total_clientes DESC;
 ```
 ![picture](./images/dis_+clientes.png)
+
+Insight:
 
 Praga lidera con 663 clientes (12.35% del total), seguida por Ostrava - mesto (180), Karviná (169), Brno - mesto (155) y Zlin (109). La distribución es más equilibrada de lo esperado, lo que sugiere que el banco tiene presencia en múltiples regiones. Se recomienda fortalecer la presencia en Brno y Ostrava, ciudades grandes con menor penetración relativa.
 
@@ -238,6 +244,8 @@ Interpretación de Estados:
 
 "D" = Retraso > 60 días → Moroso
 
+Insight:
+
 El 59.09% de los préstamos están en estado "C" (retraso de 30-60 días). Esto es crítico porque estos clientes están a un paso de caer en morosidad ("D"). Se recomienda una campaña de cobranza preventiva para evitar que el 59% de la cartera se deteriore aún más.
 
 - KPI: Préstamos en Riesgo "C" = 59.09%
@@ -259,7 +267,11 @@ FROM loan;
 ```
 ![picture](./images/estadistica_basica.png)
 
+Resultado: 
+
 El préstamo promedio es de 151,410 unidades monetarias, con un máximo de 590,820 (3.9 veces el promedio) y un mínimo de 4,980. La cartera total asciende a 103.26 millones.
+
+Insight:
 
 Hallazgo Clave: El préstamo promedio (151,410) es 1.6 veces mayor a la estimación inicial, lo que indica que el banco atiende a un segmento de clientes con mayor capacidad de endeudamiento. Sin embargo, el préstamo máximo (590,820) es 3.9 veces el promedio, lo que genera un riesgo de concentración que debe ser monitoreado.
 
@@ -286,10 +298,66 @@ ORDER BY tasa_morosidad DESC;
 ```
 ![picture](./images/tasa_morosidad.png)
 
+Insight:
+
 Domažlice tiene la tasa de morosidad más alta con 50% (1 de 2 préstamos), seguido de Bruntal, Beroun, Klatovy y Strakonice con 33.33%. Estos distritos requieren una intervención inmediata del equipo de cobranzas. Se recomienda revisar las políticas de crédito en estas zonas y asignar recursos especializados.
 
 - KPI: Tasa de Morosidad Máxima = 50% (Domažlice)
 
+### Pregunta #7: ¿Cuál es la evolución mensual de préstamos otorgados?
+
+El equipo de planeación estratégica del banco quiere entender si hay meses del año en los que se otorgan más préstamos. Esto podría deberse a campañas comerciales, estacionalidad o ciclos económicos. Con esta información, podrán ajustar sus estrategias de marketing y asignar recursos de manera más eficiente.
+
+```sql
+--P7: ¿Cuál es la evolución mensual de préstamos otorgados?
+
+SELECT YEAR(date_issued) as año,
+        MONTH(date_issued) as mes,
+        COUNT(1) AS cant_transaccion,
+        SUM(amount) as total_prestado
+FROM loan 
+GROUP BY YEAR(date_issued),MONTH(date_issued)
+ORDER BY año, mes;
+```
+![picture](./images/evol_mensual.png)
+
+Insight:
+
+El banco comenzó a otorgar préstamos en julio de 1993 con solo 3 préstamos. La actividad crediticia creció sostenidamente, alcanzando un pico en junio de 1994 con 13 préstamos. Se observa una tendencia al alza en los primeros 18 meses de operación.
+
+- KPI: Pico de préstamos = Junio 1994 (13 préstamos)
+
+### Pregunta #8: Clientes con más de 2 préstamos
+
+El equipo de retención de clientes quiere identificar a los clientes que han solicitado préstamos en más de una ocasión. Se cree que estos clientes son más leales y podrían ser candidatos para ofertas de productos premium o programas de fidelización. Identificarlos permitirá al banco diseñar estrategias personalizadas para aumentar su satisfacción y valor de por vida.
+
+```sql
+-- P8 Clientes con más de 2 préstamos
+
+SELECT 
+    c.client_id,
+    d.district_name,
+    COUNT(l.loan_id) AS total_prestamo,
+    SUM(l.amount) AS deuda_total
+FROM client c
+JOIN district d ON c.district_id = d.district_id
+JOIN disposition dis ON c.client_id = dis.client_id   
+JOIN account a ON dis.account_id = a.account_id      
+JOIN loan l ON a.account_id = l.account_id           
+GROUP BY c.client_id, d.district_name
+HAVING COUNT(l.loan_id) > 2
+ORDER BY total_prestamo DESC;
+```
+![picture](./images/client_prest.png)
+
+- Resultado:
+No se encontraron clientes con más de 2 préstamos. Todos los clientes tienen exactamente 1 préstamo.
+
+Insight:
+
+El banco no tiene clientes recurrentes en la cartera de préstamos. La estrategia actual está enfocada en la captación de nuevos clientes, pero no en la retención. Se recomienda diseñar campañas de cross-selling para ofrecer otros productos a los clientes que ya tienen un préstamo.
+
+- KPI: Clientes con más de 2 préstamos = 0
 
 
 
