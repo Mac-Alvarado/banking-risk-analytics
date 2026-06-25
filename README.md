@@ -359,8 +359,64 @@ El banco no tiene clientes recurrentes en la cartera de préstamos. La estrategi
 
 - KPI: Clientes con más de 2 préstamos = 0
 
+### Pregunta #9: ¿Cuál es el saldo promedio de las cuentas por distrito?
 
+El equipo de finanzas quiere entender la distribución de la riqueza por región para identificar mercados con mayor potencial.
 
+```sql
+-- P9: ¿Cuál es el saldo promedio de las cuentas por distrito?
 
+WITH ultimo_saldo AS (
+    SELECT 
+        account_id,
+        balance,
+        ROW_NUMBER() OVER (PARTITION BY account_id ORDER BY trans_date DESC) AS rn
+    FROM [transaction]
+)
+SELECT 
+    d.district_name,
+    COUNT(a.account_id) AS total_cuentas,
+    CAST(AVG(us.balance) AS DECIMAL(15,2)) AS saldo_promedio
+FROM ultimo_saldo us
+JOIN account a ON us.account_id = a.account_id
+JOIN district d ON a.district_id = d.district_id
+WHERE us.rn = 1
+GROUP BY d.district_name
+HAVING COUNT(a.account_id) >= 5
+ORDER BY saldo_promedio DESC;
+```
+![picture](./images/prom_distri.png)
 
+Insight:
 
+El distrito con el mayor saldo promedio es "Usti nad Orlici" con 56,096.00, seguido por "Blansko" (49,684.00) y "Teplice" (49,299.00). Karvina, aunque tiene el mayor número de cuentas (152), tiene un saldo promedio moderado de 46,069.00.
+
+**Acción Recomendada**: El banco debería focalizar sus productos premium en "Usti nad Orlici" y "Blansko", y diseñar estrategias de captación en Karvina.
+
+KPI: Distrito con mayor saldo promedio = "Usti nad Orlici" (56,096.00)
+
+### Pregunta #10: ¿Qué tipo de transacciones son más frecuentes?
+
+El equipo de operaciones quiere optimizar los procesos según el tipo de transacción más común.
+
+```sql
+--¿Qué tipo de transacciones son más frecuentes?
+
+SELECT 
+    type,
+    operation,
+    COUNT(1) AS total_transacciones,
+    SUM(CAST(amount AS BIGINT)) AS total_transado
+FROM [transaction]
+GROUP BY type, operation
+ORDER BY total_transacciones DESC;
+```
+![picture](./images/trans_frec.png)
+ 
+ Insight:
+
+La transacción más frecuente es VYDAJ (gasto) con operación VYBER (retiro), con 418,252 transacciones (39.6% del total). Le siguen las transferencias (PREVOD NA UCET) con 208,283 (19.7%) y los depósitos (PRIJEM - VKLAD) con 156,743 (14.8%).
+
+**Acción Recomendada**: El banco debería optimizar los procesos de retiro, ya que es la operación más común, y evaluar si los clientes están usando efectivo en lugar de servicios digitales.
+
+KPI: Transacción más común = VYDAJ - VYBER (418,252 transacciones)

@@ -43,17 +43,38 @@ GROUP BY c.client_id, d.district_name
 HAVING COUNT(l.loan_id) > 2
 ORDER BY total_prestamo DESC;
 
--- P9
+-- P9: ¿Cuál es el saldo promedio de las cuentas por distrito?
 
-WITH ultimo_saldo as (
-        SELECT account_id
-        FROM loan;
-
+WITH ultimo_saldo AS (
+    SELECT 
+        account_id,
+        balance,
+        ROW_NUMBER() OVER (PARTITION BY account_id ORDER BY trans_date DESC) AS rn
+    FROM [transaction]
 )
+SELECT 
+    d.district_name,
+    COUNT(a.account_id) AS total_cuentas,
+    CAST(AVG(us.balance) AS DECIMAL(15,2)) AS saldo_promedio
+FROM ultimo_saldo us
+JOIN account a ON us.account_id = a.account_id
+JOIN district d ON a.district_id = d.district_id
+WHERE us.rn = 1
+GROUP BY d.district_name
+HAVING COUNT(a.account_id) >= 5
+ORDER BY saldo_promedio DESC;
 
 
+-- P10: Tipos de transacciones más frecuentes
 
-
+SELECT 
+    type,
+    operation,
+    COUNT(1) AS total_transacciones,
+    SUM(CAST(amount AS BIGINT)) AS total_transado  
+FROM [transaction]
+GROUP BY type, operation
+ORDER BY total_transacciones DESC;
 
 
 
