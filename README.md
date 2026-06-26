@@ -34,17 +34,18 @@
 ## 📊 Estructura del Proyecto
 
 - [Sobre los Datos](#-sobre-los-datos)
-- [Preguntas de Negocio](#-preguntas-de-negocio)
-- [Consultas SQL y Resultados](#-consultas-sql-y-resultados)
-- [Insights y KPIs Estratégicos](#-insights-y-kpis-estratégicos)
-- [Conclusiones y Recomendaciones](#-conclusiones-y-recomendaciones)
-
+- [Tareas (Task)](#-tareas-task)
+- [Limpieza de Datos](#limpieza-de-datos)
+- [Análisis Exploratorio de Datos (EDA) e Insights](#análisis-exploratorio-de-datos-eda-e-insights)
+- [Conclusiones Generales](#-conclusiones-generales)
 ---
 
 ## 📁 Sobre los Datos
 
 ### Origen de los Datos
 Dataset **Berka** del banco checoslovaco, utilizado en el desafío PKDD'99. Contiene información real anonimizada de transacciones bancarias.
+
+Para mayor información de la fuente de datos originales, puedes consultar el siguiente enlace. [**(aquí)**](https://www.kaggle.com/datasets/marceloventura/the-berka-dataset)
 
 ### Estructura (8 tablas normalizadas)
 
@@ -73,6 +74,38 @@ graph TD
 | `district` | 77 |
 
 **Total:** ~1.5 millones de registros analizados
+--
+
+## 🎯 Tareas (Task)
+
+En este análisis, ayudo al equipo de riesgos del Banco Checoslovaco a responder las siguientes preguntas de negocio:
+
+
+1. **Clientes Totales:** ¿Cuántos clientes tiene el banco en total?
+
+2. **Frecuencia de Cuentas:** ¿Cuál es la distribución de cuentas por tipo de frecuencia (mensual, semanal, por transacción)?
+
+3. **Top Distritos:** ¿Cuáles son los 5 distritos con más clientes?
+
+4. **Estado de Préstamos:** ¿Cuántos préstamos hay por estado y qué porcentaje representan?
+
+5. **Estadísticas de Préstamos:** ¿Cuáles son el monto mínimo, promedio, máximo y total de los préstamos?
+
+6. **Morosidad por Distrito:** ¿Qué distritos tienen la mayor tasa de morosidad?
+
+7. **Evolución Mensual:** ¿Cuál es la evolución mensual de préstamos otorgados?
+
+8. **Clientes Recurrentes:** ¿Qué clientes tienen más de 2 préstamos?
+
+9. **Saldo por Distrito:** ¿Cuál es el saldo promedio de las cuentas por distrito?
+
+10. **Transacciones Frecuentes:** ¿Qué tipo de transacciones son más frecuentes?
+
+11. **Ranking de Clientes:** ¿Qué clientes tienen el mayor volumen de transacciones? (Ranking global y por distrito)
+
+12. **Rentabilidad por Distrito:** ¿Qué distritos son más rentables en términos de préstamos?
+
+13. **Clientes de Alto Riesgo:** ¿Qué clientes tienen mayor probabilidad de caer en morosidad?
 
 ---
 
@@ -400,7 +433,7 @@ KPI: Distrito con mayor saldo promedio = "Usti nad Orlici" (56,096.00)
 El equipo de operaciones quiere optimizar los procesos según el tipo de transacción más común.
 
 ```sql
---¿Qué tipo de transacciones son más frecuentes?
+-- P10 ¿Qué tipo de transacciones son más frecuentes?
 
 SELECT 
     type,
@@ -420,3 +453,116 @@ La transacción más frecuente es VYDAJ (gasto) con operación VYBER (retiro), c
 **Acción Recomendada**: El banco debería optimizar los procesos de retiro, ya que es la operación más común, y evaluar si los clientes están usando efectivo en lugar de servicios digitales.
 
 KPI: Transacción más común = VYDAJ - VYBER (418,252 transacciones)
+
+### Pregunta #12: Análisis de rentabilidad de préstamos por distrito
+
+ El equipo de finanzas quiere identificar qué distritos son más rentables para focalizar sus esfuerzos.
+
+```sql
+-- P12 Análisis de rentabilidad de préstamos por distrito
+
+SELECT 
+    d.district_name,
+    COUNT(l.loan_id) AS total_prestamos,
+    SUM(l.amount) AS monto_total,
+    SUM(CASE WHEN l.status IN ('"A"','"B"') THEN l.amount ELSE 0 END) AS monto_rentable,
+    CAST(
+        SUM(CASE WHEN l.status IN ('"A"','"B"') THEN l.amount ELSE 0 END) * 100.0 / SUM(l.amount)
+        AS DECIMAL(5,2)
+    ) AS porcentaje_rentabilidad,
+    CASE 
+        WHEN SUM(CASE WHEN l.status IN ('"A"','"B"') THEN l.amount ELSE 0 END) * 100.0 / SUM(l.amount) > 90 THEN 'Excelente'
+        WHEN SUM(CASE WHEN l.status IN ('"A"','"B"') THEN l.amount ELSE 0 END) * 100.0 / SUM(l.amount) > 80 THEN 'Bueno'
+        WHEN SUM(CASE WHEN l.status IN ('"A"','"B"') THEN l.amount ELSE 0 END) * 100.0 / SUM(l.amount) > 70 THEN 'Regular'
+        ELSE 'Crítico'
+    END AS clasificacion
+FROM district d
+JOIN account a ON d.district_id = a.district_id
+JOIN loan l ON a.account_id = l.account_id
+GROUP BY d.district_name
+HAVING COUNT(l.loan_id) >= 3
+ORDER BY porcentaje_rentabilidad DESC;
+```
+
+![picture](./images/rent_pres_dist.png)
+
+Insight:
+
+Solo 2 distritos superan el 70% de rentabilidad: Tachov (78.87%) y Praha - zapad (73.79%). El resto está en estado "Crítico". El caso más alarmante es Praga, que con 84 préstamos (el mayor volumen) apenas alcanza un 28.15% de rentabilidad. Esto evidencia políticas de crédito más laxas en la capital. Se recomienda auditar Praga, replicar el modelo de Tachov y crear un comité de riesgos mensual.
+
+Acción Recomendada:
+
+- Auditar políticas de crédito en Praga (el mercado más grande es el menos rentable).
+
+- Replicar el modelo de Tachov en otros distritos.
+
+- Crear un comité de riesgos para revisión mensual de la cartera.
+
+KPI: Distrito más rentable = Tachov (78.87%) | Distrito con mayor volumen = Praga (28.15% rentabilidad)
+
+### Pregunta #13: Clientes de alto riesgo (predicción de morosidad)
+
+ El equipo de riesgos quiere identificar clientes con mayor probabilidad de caer en default.
+
+```sql
+-- P13: Clientes de alto riesgo (predicción de morosidad)
+
+WITH perfil_cliente AS (
+    SELECT 
+        c.client_id,
+        d.district_name,
+        COUNT(l.loan_id) AS total_prestamos,
+        SUM(l.amount) AS deuda_total,
+        COUNT(CASE WHEN l.status = '"D"' THEN 1 END) AS prestamos_morosos,
+        COUNT(CASE WHEN l.status = '"C"' THEN 1 END) AS prestamos_riesgo,
+        AVG(l.amount) AS monto_promedio_prestamo
+    FROM client c
+    JOIN district d ON c.district_id = d.district_id
+    JOIN disposition dis ON c.client_id = dis.client_id
+    JOIN account a ON dis.account_id = a.account_id
+    JOIN loan l ON a.account_id = l.account_id
+    GROUP BY c.client_id, d.district_name
+    HAVING COUNT(l.loan_id) >= 1
+)
+SELECT TOP 20
+    client_id,
+    district_name,
+    total_prestamos,
+    deuda_total,
+    prestamos_morosos,
+    prestamos_riesgo,
+    monto_promedio_prestamo,
+    CASE 
+        WHEN prestamos_morosos > 0 AND deuda_total > 400000 THEN 'Crítico'
+        WHEN prestamos_morosos > 0 OR deuda_total > 500000 THEN 'Alto'
+        WHEN prestamos_riesgo >= 1 AND deuda_total > 300000 THEN 'Moderado'
+        ELSE 'Bajo'
+    END AS nivel_riesgo,
+    RANK() OVER (ORDER BY deuda_total DESC) AS ranking_deuda
+FROM perfil_cliente
+ORDER BY deuda_total DESC;
+```
+
+![picture](./images/alto_riesgo.png)
+
+Insight:
+
+El banco enfrenta un riesgo concentrado en préstamos individuales de alto monto, no en clientes con múltiples préstamos. Los 20 clientes con mayor deuda tienen préstamos que oscilan entre 444,864 y 590,820, muy por encima del promedio global (151,410). Se detectaron 6 clientes en estado "Crítico" con pérdidas potenciales de ~2.4 millones. Praga y Brno concentran el mayor riesgo, lo que sugiere políticas de crédito más laxas en estos distritos. Se recomienda cobranza especializada para los casos críticos y revisar criterios de aprobación en ambas regiones.
+
+KPI: Clientes "Críticos" = 6 | Deuda en riesgo = ~2.4M
+
+##  Conclusiones Generales
+
+Este análisis integral, desarrollado sobre la base de datos del **Banco Checoslovaco (Berka Dataset)**, permitió transformar más de 1.5 millones de registros transaccionales en información estratégica para la toma de decisiones en las áreas de riesgos, finanzas y operaciones.
+
+- **El 65.69% de los préstamos se encuentran en estados problemáticos (`"C"` o `"D"`),** lo que evidencia una grave crisis de calidad crediticia que requiere una revisión inmediata de las políticas de aprobación y un fortalecimiento del área de cobranzas.
+
+- **Praga, el distrito con mayor volumen de préstamos (84), presenta solo un 28.15% de rentabilidad,** convirtiéndose en el mercado más grande pero el menos rentable. Esto sugiere que las políticas de crédito en la capital son significativamente más laxas que en el resto del país.
+
+- **Se identificaron 6 clientes en nivel "Crítico",** con préstamos morosos y deudas superiores a 400,000 unidades monetarias, representando una pérdida potencial de aproximadamente 2.4 millones. Estos casos requieren cobranza especializada y seguimiento personalizado.
+
+- **Las transacciones de retiro (`VYDAJ - VYBER`) son las más frecuentes (39.6% del total),** lo que indica que los clientes prefieren el efectivo sobre los servicios digitales. El banco debería fortalecer su banca digital para reducir costos operativos y mejorar la experiencia del cliente.
+
+- **Solo 2 distritos (`Tachov` y `Praha - zapad`) superan el 70% de rentabilidad,** mientras que el resto se encuentra en estado "Crítico". Esto revela una oportunidad para documentar y replicar las buenas prácticas de estos distritos en el resto del país.
+
+Para asegurar la sostenibilidad del negocio, el banco debe adoptar una postura proactiva en la gestión del riesgo crediticio, monitoreando en tiempo real la cartera de préstamos y estableciendo alertas tempranas para préstamos de alto monto (>400,000). Asimismo, resulta fundamental estandarizar las políticas de aprobación a nivel nacional y fortalecer la banca digital para reducir la dependencia del efectivo.
