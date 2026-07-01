@@ -566,3 +566,58 @@ Este análisis integral, desarrollado sobre la base de datos del **Banco Checosl
 - **Solo 2 distritos (`Tachov` y `Praha - zapad`) superan el 70% de rentabilidad,** mientras que el resto se encuentra en estado "Crítico". Esto revela una oportunidad para documentar y replicar las buenas prácticas de estos distritos en el resto del país.
 
 Para asegurar la sostenibilidad del negocio, el banco debe adoptar una postura proactiva en la gestión del riesgo crediticio, monitoreando en tiempo real la cartera de préstamos y estableciendo alertas tempranas para préstamos de alto monto (>400,000). Asimismo, resulta fundamental estandarizar las políticas de aprobación a nivel nacional y fortalecer la banca digital para reducir la dependencia del efectivo.
+
+## 🐍 Análisis con Python
+
+Para complementar el análisis SQL, utilicé **Python** con las librerías `pandas`, `matplotlib` y `seaborn` para generar visualizaciones avanzadas que permiten identificar patrones clave en los datos.
+
+### Conexión a SQL Server
+
+```python
+def conectar_sql():
+    conn = pyodbc.connect(
+        'DRIVER={ODBC Driver 17 for SQL Server};'
+        'SERVER=.;'
+        'DATABASE=BancoChecoslovaco;'
+        'Trusted_Connection=yes;'
+    )
+    return conn
+```
+
+### Visualizaciones Generadas
+- 1. Distribución de Préstamos por Estado
+
+![picture](./images/py_distribucion_estados.png)
+
+Insight: 
+
+El 59.2% de los préstamos están en estado "C" (riesgo) y el 6.4% en "D" (moroso). Solo el 29.8% son "Buenos" ("A").
+
+
+- 2. Top 10 Distritos con Mayor Morosidad
+
+![picture](./images/py_top_morosidad.png)
+
+Insight:
+
+ Los distritos con mayor morosidad requieren atención inmediata del equipo de cobranzas.
+
+ - 3. Evolución Mensual de Préstamos
+
+![picture](./images/py_evolucion_mensual.png)
+
+Insight:
+
+ El banco comenzó con pocos préstamos en 1993 y alcanzó su pico en 1998 con 23 préstamos mensuales.
+
+ - 4. Top 10 Clientes por Deuda
+
+![picture](./images/py_top_deuda.png)
+
+Insight: 
+
+Los clientes con mayor deuda están concentrados en Praga, Brno y Karvina, con montos que superan los 500,000 unidades monetarias.
+
+## Código Fuente
+
+El notebook completo está disponible en: [`python/01_analisis_python.ipynb`](python/01_analisis_python.ipynb)
