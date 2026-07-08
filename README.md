@@ -618,6 +618,21 @@ Insight:
 
 Los clientes con mayor deuda están concentrados en Praga, Brno y Karvina, con montos que superan los 500,000 unidades monetarias.
 
-## Código Fuente
+### Código Fuente
 
 El notebook completo está disponible en: [`python/01_analisis_python.ipynb`](python/01_analisis_python.ipynb)
+
+##  Dashboard en Power BI
+
+Para visualizar los resultados del análisis de forma interactiva, se desarrolló un dashboard en Power BI que resume los principales KPIs y hallazgos del proyecto.
+
+![Dashboard Power BI](images/dashboard.png)
+
+**El dashboard incluye:**
+- **KPIs clave:** Total de clientes, préstamos, transacciones, tasa de morosidad y monto total.
+- **Distribución de préstamos por estado:** Clasificación en A (bueno), B (regular), C (riesgo) y D (moroso).
+- **Top 7 distritos con mayor morosidad:** Identificación de las zonas críticas.
+- **Evolución mensual de préstamos:** Tendencia a lo largo del tiempo.
+- **Filtro por distrito:** Permite segmentar el análisis por región.
+
+ **Archivo Power BI:** [`powerbi/Análisis_riesgo_crediticio.pbix`](powerbi/Análisis_riesgo_crediticio.pbix)
