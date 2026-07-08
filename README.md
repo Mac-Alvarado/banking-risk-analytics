@@ -488,6 +488,8 @@ ORDER BY porcentaje_rentabilidad DESC;
 
 ![picture](./images/rent_pres_dist.png)
 
+![picture](./images/mayor_prestamo.png)
+
 Insight:
 
 Solo 2 distritos superan el 70% de rentabilidad: Tachov (78.87%) y Praha - zapad (73.79%). El resto está en estado "Crítico". El caso más alarmante es Praga, que con 84 préstamos (el mayor volumen) apenas alcanza un 28.15% de rentabilidad. Esto evidencia políticas de crédito más laxas en la capital. Se recomienda auditar Praga, replicar el modelo de Tachov y crear un comité de riesgos mensual.
