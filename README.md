@@ -31,16 +31,18 @@
 
 ---
 
-## 📊 Estructura del Proyecto
+## Estructura del Proyecto
 
-- [Sobre los Datos](#-sobre-los-datos)
-- [Tareas (Task)](#-tareas-task)
+- [Sobre los Datos](#sobre-los-datos)
+- [Tareas (Task)](#tareas-task)
 - [Limpieza de Datos](#limpieza-de-datos)
 - [Análisis Exploratorio de Datos (EDA) e Insights](#análisis-exploratorio-de-datos-eda-e-insights)
-- [Conclusiones Generales](#-conclusiones-generales)
+- [Análisis con Python](#análisis-con-python)
+- [Dashboard en Power BI](#dashboard-en-power-bi)
+- [Conclusiones Generales](#conclusiones-generales)
 ---
 
-## 📁 Sobre los Datos
+##  Sobre los Datos
 
 ### Origen de los Datos
 Dataset **Berka** del banco checoslovaco, utilizado en el desafío PKDD'99. Contiene información real anonimizada de transacciones bancarias.
@@ -76,7 +78,7 @@ graph TD
 **Total:** ~1.5 millones de registros analizados
 --
 
-## 🎯 Tareas (Task)
+##  Tareas (Task)
 
 En este análisis, ayudo al equipo de riesgos del Banco Checoslovaco a responder las siguientes preguntas de negocio:
 
@@ -551,25 +553,10 @@ El banco enfrenta un riesgo concentrado en préstamos individuales de alto monto
 
 KPI: Clientes "Críticos" = 6 | Deuda en riesgo = ~2.4M
 
-##  Conclusiones Generales
 
-Este análisis integral, desarrollado sobre la base de datos del **Banco Checoslovaco (Berka Dataset)**, permitió transformar más de 1.5 millones de registros transaccionales en información estratégica para la toma de decisiones en las áreas de riesgos, finanzas y operaciones.
+##  Análisis con Python
 
-- **El 65.69% de los préstamos se encuentran en estados problemáticos (`"C"` o `"D"`),** lo que evidencia una grave crisis de calidad crediticia que requiere una revisión inmediata de las políticas de aprobación y un fortalecimiento del área de cobranzas.
-
-- **Praga, el distrito con mayor volumen de préstamos (84), presenta solo un 28.15% de rentabilidad,** convirtiéndose en el mercado más grande pero el menos rentable. Esto sugiere que las políticas de crédito en la capital son significativamente más laxas que en el resto del país.
-
-- **Se identificaron 6 clientes en nivel "Crítico",** con préstamos morosos y deudas superiores a 400,000 unidades monetarias, representando una pérdida potencial de aproximadamente 2.4 millones. Estos casos requieren cobranza especializada y seguimiento personalizado.
-
-- **Las transacciones de retiro (`VYDAJ - VYBER`) son las más frecuentes (39.6% del total),** lo que indica que los clientes prefieren el efectivo sobre los servicios digitales. El banco debería fortalecer su banca digital para reducir costos operativos y mejorar la experiencia del cliente.
-
-- **Solo 2 distritos (`Tachov` y `Praha - zapad`) superan el 70% de rentabilidad,** mientras que el resto se encuentra en estado "Crítico". Esto revela una oportunidad para documentar y replicar las buenas prácticas de estos distritos en el resto del país.
-
-Para asegurar la sostenibilidad del negocio, el banco debe adoptar una postura proactiva en la gestión del riesgo crediticio, monitoreando en tiempo real la cartera de préstamos y estableciendo alertas tempranas para préstamos de alto monto (>400,000). Asimismo, resulta fundamental estandarizar las políticas de aprobación a nivel nacional y fortalecer la banca digital para reducir la dependencia del efectivo.
-
-## 🐍 Análisis con Python
-
-Para complementar el análisis SQL, utilicé **Python** con las librerías `pandas`, `matplotlib` y `seaborn` para generar visualizaciones avanzadas que permiten identificar patrones clave en los datos.
+Para complementar el análisis SQL, se utilizó Python con las librerías `pandas`, `matplotlib` y `seaborn` para generar visualizaciones que permiten identificar patrones clave en los datos. Los resultados obtenidos son consistentes con el dashboard de Power BI.
 
 ### Conexión a SQL Server
 
@@ -636,3 +623,44 @@ Para visualizar los resultados del análisis de forma interactiva, se desarroll�
 - **Filtro por distrito:** Permite segmentar el análisis por región.
 
  **Archivo Power BI:** [`powerbi/Análisis_riesgo_crediticio.pbix`](powerbi/Análisis_riesgo_crediticio.pbix)
+
+ ##  Conclusiones Generales
+
+Este análisis integral, desarrollado sobre la base de datos del **Banco Checoslovaco (Berka Dataset)**, permitió transformar más de 1.5 millones de registros transaccionales en información estratégica para la toma de decisiones en las áreas de riesgos, finanzas y operaciones, utilizando un stack completo de herramientas de datos (SQL, Python y Power BI).
+
+###  Hallazgos Clave con SQL
+
+- **El 65.69% de los préstamos se encuentran en estados problemáticos (`"C"` o `"D"`),** lo que evidencia una grave crisis de calidad crediticia que requiere una revisión inmediata de las políticas de aprobación y un fortalecimiento del área de cobranzas.
+
+- **Praga, el distrito con mayor volumen de préstamos (84), presenta solo un 28.15% de rentabilidad,** convirtiéndose en el mercado más grande pero el menos rentable. Esto sugiere que las políticas de crédito en la capital son significativamente más laxas que en el resto del país.
+
+- **Se identificaron 6 clientes en nivel "Crítico",** con préstamos morosos y deudas superiores a 400,000 unidades monetarias, representando una pérdida potencial de aproximadamente 2.4 millones. Estos casos requieren cobranza especializada y seguimiento personalizado.
+
+- **Las transacciones de retiro (`VYDAJ - VYBER`) son las más frecuentes (39.6% del total),** lo que indica que los clientes prefieren el efectivo sobre los servicios digitales. El banco debería fortalecer su banca digital para reducir costos operativos y mejorar la experiencia del cliente.
+
+- **Solo 2 distritos (`Tachov` y `Praha - zapad`) superan el 70% de rentabilidad,** mientras que el resto se encuentra en estado "Crítico". Esto revela una oportunidad para documentar y replicar las buenas prácticas de estos distritos en el resto del país.
+
+###  Visualización y Análisis con Python
+
+- **Las visualizaciones generadas con Python** (distribución de préstamos por estado, top distritos con morosidad y evolución mensual) permitieron identificar patrones de forma más clara y dinámica, complementando el análisis SQL y facilitando la comunicación de insights a equipos no técnicos.
+
+- **La evolución mensual de préstamos** mostró un crecimiento sostenido desde 1993 hasta 1998, con un pico en enero de 1998 (23 préstamos), lo que sugiere un período de expansión crediticia que debe ser monitoreado.
+
+###  Dashboard Interactivo en Power BI
+
+- **El dashboard en Power BI** consolida los KPIs clave en un solo panel interactivo, permitiendo a los ejecutivos filtrar por distrito y visualizar la morosidad, rentabilidad y evolución de préstamos en tiempo real.
+
+- **La segmentación por distrito** facilita el análisis regional, identificando que distritos como Karviná y Brno - mesto requieren atención prioritaria.
+
+###  Tecnologías y Enfoque Profesional
+
+- **La integración de SQL, Python y Power BI** en un mismo proyecto demuestra un enfoque integral y profesional para el análisis de datos, cubriendo desde la extracción y limpieza hasta la visualización interactiva y la generación de recomendaciones ejecutivas.
+
+###  Recomendaciones Finales
+
+Para asegurar la sostenibilidad del negocio, el banco debe adoptar una postura proactiva en la gestión del riesgo crediticio:
+1. **Revisar políticas de crédito en Praga** para alinear la rentabilidad con el volumen.
+2. **Implementar cobranza especializada** para los 6 clientes en nivel "Crítico".
+3. **Replicar el modelo de Tachov** (78.87% de rentabilidad) en otros distritos.
+4. **Fortalecer la banca digital** para reducir la dependencia del efectivo.
+5. **Monitorear mensualmente** la evolución de préstamos y morosidad mediante el dashboard en Power BI.
